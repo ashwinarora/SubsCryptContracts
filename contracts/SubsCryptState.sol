@@ -16,15 +16,17 @@ abstract contract SubsCryptState {
 
     address public CURRENCY_TOKEN;
 
-    mapping (uint => Subscription) public AllSubscriptions;
     mapping (uint => Service) public AllServices;
+    mapping (uint => Subscription) public AllSubscriptions;
     uint public totalSubscriptions;
     uint public totalServices;
+    uint public feeCollected;
 
     mapping (address => uint[]) public MyServices;
     mapping (address => uint[]) public MySubscriptions;
 
     struct Subscription {
+        address subscriber;
         uint serviceId;
         uint nextRenewal;
         bool isActive;
@@ -34,7 +36,7 @@ abstract contract SubsCryptState {
         address provider;
         uint price;
         uint renewalPeriod;
-        uint totalSubscribers;
+        uint[] subscriptionIDs;
         bool isActive;
     }
 
@@ -43,7 +45,16 @@ abstract contract SubsCryptState {
         _;
     }
 
+    modifier onlySubscriber(uint subscriptionId) {
+        require(AllSubscriptions[subscriptionId].subscriber == msg.sender, "Only subscriber can call this function");
+        _;
+    }
+
+
     event ServiceRegistered(address indexed provider, uint indexed serviceId, uint price, uint renewalPeriod);
     event Subscribed(address indexed subscriber, uint indexed serviceId, uint indexed subscriptionId);
+
+    event FundsCollectedByProvider(uint indexed serviceId, uint indexed amount);
+    event SubscriptionProcesses(uint indexed serviceId, uint indexed amount, uint indexed fee);
 
 }
