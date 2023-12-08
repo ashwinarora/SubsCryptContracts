@@ -23,10 +23,42 @@ contract SubsCryptView is SubsCryptState {
         return false;
     }
 
-    // function getCollectableFundsFor(uint serviceId) external view onlyProvider(serviceId) returns (uint) {
-    //     Service storage service = AllServices[serviceId];
-    //     require(!service.isActive, "Service is active");
-    //     return service.totalSubscribers * service.price;
-    // }
+    function getActiveSubscribersOf(uint serviceId) external view returns (address[] memory) {
+        Service memory service = AllServices[serviceId];
+        address[] memory activeSubscribers = new address[](service.subscriptionIDs.length);
+        uint activeSubscribersCount = 0;
+        for (uint i = 0; i < service.subscriptionIDs.length; i++) {
+            Subscription memory subscription = AllSubscriptions[service.subscriptionIDs[i]];
+            if (subscription.isActive) {
+                activeSubscribers[activeSubscribersCount] = subscription.subscriber;
+                activeSubscribersCount++;
+            }
+        }
+        address[] memory result = new address[](activeSubscribersCount);
+        for (uint i = 0; i < activeSubscribersCount; i++) {
+            result[i] = activeSubscribers[i];
+        }
+        return result;
+    }
+
+    function getActiveSubscriberCount(uint serviceId) external view returns (uint count) {
+        Service memory service = AllServices[serviceId];
+        for(uint i = 0; i < service.subscriptionIDs.length ; i++) {
+            Subscription memory subscription = AllSubscriptions[service.subscriptionIDs[i]];
+            if(subscription.isActive) {
+                count++;
+            }
+        }
+    }
+
+    function getCollectableFundsOf(uint serviceId) external view returns (uint collectableFunds) {
+        Service memory service = AllServices[serviceId];
+        for(uint i = 0; i < service.subscriptionIDs.length ; i++) {
+            Subscription memory subscription = AllSubscriptions[service.subscriptionIDs[i]];
+            if(subscription.isActive && subscription.nextRenewal < block.timestamp){
+                collectableFunds += service.price;
+            }
+        }
+    }
 
 }
