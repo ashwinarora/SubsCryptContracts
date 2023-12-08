@@ -7,12 +7,11 @@ import "./SubsCryptSubscriber.sol";
 
 contract SubsCrypt is SubsCryptSubscriber, Ownable {
 
-    
     constructor(address _currencyToken) Ownable(msg.sender)  {
         CURRENCY_TOKEN = _currencyToken;
     }
 
-    function processSubscriptionsByService(uint serviceId) external onlyOwner {
+    function processSubscriptionsByService(uint serviceId) public onlyOwner {
         Service memory service = AllServices[serviceId];
         require(service.isActive, "Service is active");
         uint totalFundsCollected;
@@ -30,9 +29,15 @@ contract SubsCrypt is SubsCryptSubscriber, Ownable {
         emit SubscriptionProcesses(serviceId, totalFundsCollected - fee, fee);
     }
 
-    function withdrawFee() external onlyOwner {
-        IERC20(CURRENCY_TOKEN).transferFrom(address(this), msg.sender, feeCollected);
+    function withdrawFee(address _receiver) external onlyOwner {
+        IERC20(CURRENCY_TOKEN).transferFrom(address(this), _receiver, feeCollected);
         feeCollected = 0;
+    }
+
+    function processMultipleServices(uint[] memory serviceIds) external onlyOwner {
+        for(uint i=0; i < serviceIds.length ; i++) {
+            processSubscriptionsByService(serviceIds[i]);
+        }
     }
 
 }
