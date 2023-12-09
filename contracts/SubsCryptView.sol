@@ -9,8 +9,12 @@ contract SubsCryptView is SubsCryptState {
         return MyServices[_provider].length;
     }
 
-    function getTotalSubscriptionOf(address _subscriber) external view returns (uint) {
+    function getTotalSubscriptionsOf(address _subscriber) external view returns (uint) {
         return MySubscriptions[_subscriber].length;
+    }
+
+    function getTotalSubscribersOf(uint serviceId) external view returns (uint) {
+        return AllServices[serviceId].subscriptionIDs.length;
     }
 
     function isSubscribedTo(uint serviceId, address subscriber) public view returns (bool) {
