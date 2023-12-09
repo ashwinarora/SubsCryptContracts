@@ -82,7 +82,8 @@ contract SubsCryptView is SubsCryptState {
         for(uint i = 0; i < service.subscriptionIDs.length ; i++) {
             Subscription memory subscription = AllSubscriptions[service.subscriptionIDs[i]];
             if(subscription.isActive && subscription.nextRenewal < block.timestamp){
-                collectableFunds += service.price;
+                uint periodsPassed = (block.timestamp - subscription.nextRenewal) / service.renewalPeriod;
+                collectableFunds += service.price * periodsPassed;
             }
         }
     }

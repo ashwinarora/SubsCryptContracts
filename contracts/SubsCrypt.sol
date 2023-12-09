@@ -18,9 +18,11 @@ contract SubsCrypt is SubsCryptSubscriber, Ownable {
         for(uint i=0; i<service.subscriptionIDs.length; i++){
             Subscription storage subscription = AllSubscriptions[service.subscriptionIDs[i]];
             if(subscription.isActive && subscription.nextRenewal < block.timestamp){
-                totalFundsCollected += service.price;
-                subscription.nextRenewal += service.renewalPeriod;
-                IERC20(CURRENCY_TOKEN).transferFrom(subscription.subscriber, address(this), service.price);
+                uint periodsPassed = (block.timestamp - subscription.nextRenewal) / service.renewalPeriod;
+                uint priceToAdd = service.price * periodsPassed;
+                totalFundsCollected += priceToAdd;
+                subscription.nextRenewal += periodsPassed * service.renewalPeriod;
+                IERC20(CURRENCY_TOKEN).transferFrom(subscription.subscriber, address(this), priceToAdd);
             }
         }
         uint fee = totalFundsCollected / 100 ; 
