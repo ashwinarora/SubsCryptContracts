@@ -17,9 +17,9 @@ contract SubsCryptProvider is SubsCryptView{
         newService.price = price;
         newService.renewalPeriod = renewalPeriod;
         newService.isActive = true;
-        totalServices++;
         MyServices[msg.sender].push(totalServices);
         emit ServiceRegistered(msg.sender, totalServices, price, renewalPeriod);
+        totalServices++;
     }
 
     function deactivateService(
