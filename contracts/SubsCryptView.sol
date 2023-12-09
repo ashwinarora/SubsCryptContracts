@@ -17,6 +17,20 @@ contract SubsCryptView is SubsCryptState {
         return AllServices[serviceId].subscriptionIDs.length;
     }
 
+    function getSubscription(address subscriber, uint serviceId) external view returns(
+        uint subscriptionId,
+        uint nextRenewal,
+        bool isActive
+    ) {
+        uint[] memory mySubscriptions = MySubscriptions[subscriber];
+        for (uint i = 0; i < mySubscriptions.length; i++) {
+            if (serviceId == AllSubscriptions[mySubscriptions[i]].serviceId) {
+                Subscription memory subscription = AllSubscriptions[mySubscriptions[i]];
+                return (mySubscriptions[i], subscription.nextRenewal, subscription.isActive);
+            }
+        }
+    }
+
     function isSubscribedTo(uint serviceId, address subscriber) public view returns (bool) {
         uint[] memory mySubscriptions = MySubscriptions[subscriber];
         for (uint i = 0; i < mySubscriptions.length; i++) {
