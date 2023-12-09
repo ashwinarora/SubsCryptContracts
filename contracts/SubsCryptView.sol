@@ -17,6 +17,14 @@ contract SubsCryptView is SubsCryptState {
         return AllServices[serviceId].subscriptionIDs.length;
     }
 
+    function getAllMyServiceIds(address _provider) external view returns (uint[] memory) {
+        return MyServices[_provider];
+    }
+
+    function getAllMySubscriptionIds(address _subscriber) external view returns (uint[] memory) {
+        return MySubscriptions[_subscriber];
+    }
+
     function getSubscription(address subscriber, uint serviceId) external view returns(
         uint subscriptionId,
         uint nextRenewal,
